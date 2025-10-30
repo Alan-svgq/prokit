@@ -1,0 +1,3279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта чистоты Каспийского побережья</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e5799;
+            --primary-dark: #154278;
+            --primary-light: #2989d8;
+            --secondary: #4CAF50;
+            --secondary-dark: #3d8b40;
+            --accent: #ff9800;
+            --danger: #f44336;
+            --warning: #ffc107;
+            --info: #2196F3;
+            --success: #4CAF50;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --box-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Новый современный хедер */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, #fff, #e0f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 24px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        nav a:hover::after {
+            width: 80%;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, var(--accent) 0%, #e68900 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #d32f2f 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #e6a700 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--info) 0%, #0b7dda 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Обновленный дашборд */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        #map {
+            height: 560px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-instruction {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-map-instruction {
+            position: absolute;
+            top: 65px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            color: var(--danger);
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Обновленная панель статистики */
+        .stats-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.8rem;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .stats-panel h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 0.8rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-panel h2 i {
+            color: var(--primary-light);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            background: rgba(30, 87, 153, 0.03);
+            border-radius: 6px;
+            padding: 0.8rem;
+            margin: 0 -0.5rem 1.2rem -0.5rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Обновленные контролы */
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select, input {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            background: white;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(30, 87, 153, 0.1);
+        }
+
+        /* Обновленная секция отчетов */
+        .reports-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .reports-section h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 0.8rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(30, 87, 153, 0.1);
+        }
+
+        .file-upload {
+            border: 2px dashed var(--gray-light);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: #fafbfc;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background-color: #f0f7ff;
+        }
+
+        .file-upload i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .file-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .file-preview-item {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .file-preview-item:hover {
+            transform: scale(1.05);
+        }
+
+        .file-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .remove-preview-photo {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .remove-preview-photo:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* Обновленные модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            animation: modalAppear 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+
+        /* Обновленная админ-панель */
+        .admin-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .admin-panel h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 0.8rem;
+            font-size: 1.5rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0f7ff 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent);
+        }
+
+        .admin-indicator {
+            background: var(--accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .pending-reports {
+            margin-top: 1.8rem;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid var(--warning);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+        }
+
+        .report-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .report-card.approved {
+            border-left-color: var(--success);
+        }
+
+        .report-card.rejected {
+            border-left-color: var(--danger);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 12px 20px;
+            background: var(--gray-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .admin-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 87, 153, 0.3);
+        }
+
+        .admin-tab:hover:not(.active) {
+            background: #dde7f3;
+            color: var(--primary);
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .existing-points-list {
+            margin-top: 1.5rem;
+        }
+
+        .point-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid var(--info);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .point-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .point-info {
+            flex: 1;
+        }
+
+        .point-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Обновленные секции "О проекте" и другие */
+        .about-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .about-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.8rem;
+            border-bottom: 2px solid var(--gray-light);
+            padding-bottom: 0.8rem;
+            font-size: 1.6rem;
+        }
+
+        .about-content {
+            line-height: 1.8;
+        }
+
+        .about-content h3 {
+            color: var(--primary);
+            margin: 2rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .about-content ul {
+            margin-left: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-content li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .about-content li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: -15px;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Обновленные бейджи статусов */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background-color: rgba(255, 235, 59, 0.2);
+            color: #b3a125;
+            border: 1px solid rgba(255, 235, 59, 0.3);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #c17702;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+
+        .status-in-progress {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #0b7dda;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .status-cleaned {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #2e7d32;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        /* Обновленные попапы маркеров */
+        .marker-popup {
+            max-width: 280px;
+            padding: 15px;
+        }
+
+        .marker-popup img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            max-height: 160px;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .marker-popup h3 {
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .marker-popup .description {
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .marker-popup .meta {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .delete-marker-btn {
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .photo-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .photo-item {
+            position: relative;
+            width: 85px;
+            height: 85px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .status-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-light);
+            font-size: 0.85rem;
+            background: white;
+            transition: var(--transition);
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        .add-photo-btn {
+            margin-top: 12px;
+        }
+
+        .photo-modal {
+            max-width: 650px;
+        }
+
+        .photo-modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .photo-modal-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .photo-modal-item {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .photo-modal-item:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-modal-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Обновленный селектор языка */
+        .language-selector {
+            position: relative;
+            margin-left: 16px;
+        }
+        
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+        
+        .language-btn:hover { 
+            background: rgba(255,255,255,0.25); 
+            transform: translateY(-2px);
+        }
+        
+        .flag {
+            width: 22px; 
+            height: 16px;
+            border-radius: 3px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .flag-ru { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 6"><path fill="white" d="M0 0h9v3H0z"/><path fill="blue" d="M0 3h9v3H0z"/><path fill="red" d="M0 2h9v2H0z"/></svg>'); 
+        }
+        
+        .flag-gb { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><path fill="%23012169" d="M0 0v30h60V0z"/><path fill="%23C8102E" d="M0 0v2l25 13h5l25-13V0H0zm0 30v-2l25-13h5l25 13v2H0z"/><path fill="%23C8102E" d="M25 0v30h10V0H25zM0 10v10h60V10H0z"/><path fill="white" d="M0 12v6h60v-6H0zM27 0v30h6V0h-6z"/></svg>'); 
+        }
+        
+        .flag-us { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 10"><rect width="19" height="10" fill="#b22234"/><g fill="#fff"><rect y="1" width="19" height="1"/><rect y="3" width="19" height="1"/><rect y="5" width="19" height="1"/><rect y="7" width="19" height="1"/><rect y="9" width="19" height="1"/></g><rect width="7.6" height="5.4" fill="#3c3b6e"/></svg>'); 
+        }
+        
+        .flag-kz { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><path fill="%2300afca" d="M0 0h3v2H0z"/><path fill="%23fec50c" d="M0 0h3v1H0z"/><path fill="%2300afca" d="M1.2.5a.3.3 0 1 0 0 .6.3.3 0 0 0 0-.6z"/><path fill="%23fec50c" d="m1.2.6.1-.1-.1-.1-.1.1z"/></svg>'); 
+        }
+        
+        .flag-az { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><path fill="%233f9c35" d="M0 0h3v2H0z"/><path fill="red" d="M0 0h3v1H0z"/><path fill="blue" d="M0 1h3v1H0z"/><circle cx="1.2" cy="1" r=".3" fill="white"/><path fill="red" d="m1.2 1 .1-.1-.1-.1-.1.1z"/></svg>'); 
+        }
+        
+        .flag-iq { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><path fill="%23ce1126" d="M0 0h3v2H0z"/><path fill="white" d="M0 0h1v2H0z"/><path fill="black" d="M1 0h1v2H1z"/><path fill="%23107c10" d="M2 0h1v2H2z"/></svg>'); 
+        }
+        
+        .flag-ae { 
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8"><rect width="12" height="8" fill="white"/><rect width="12" height="2.67" y="0" fill="#00732f"/><rect width="12" height="2.67" y="2.67" fill="#fff"/><rect width="12" height="2.67" y="5.34" fill="#ef2b2d"/><rect width="3.33" height="8" fill="#231f20"/></svg>'); 
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%; 
+            right: 0;
+            background: white;
+            border-radius: 10px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            min-width: 160px; 
+            display: none; 
+            z-index: 1000;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .language-dropdown.show { 
+            display: block; 
+            animation: dropdownAppear 0.2s ease-out;
+        }
+        
+        @keyframes dropdownAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .language-option { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 12px 16px; 
+            cursor: pointer; 
+            transition: var(--transition); 
+            border-bottom: 1px solid #f0f0f0; 
+        }
+        
+        .language-option:last-child { 
+            border-bottom: none; 
+        }
+        
+        .language-option:hover { 
+            background-color: #f5f9ff; 
+        }
+        
+        .language-option.active { 
+            background-color: #e3f2fd; 
+        }
+        
+        .language-code { 
+            font-weight: bold; 
+            color: #333; 
+            min-width: 30px; 
+        }
+        
+        .language-name { 
+            color: #333; 
+            flex: 1; 
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .report-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .point-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .point-actions {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-content {
+                padding: 1rem;
+            }
+            
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            .stats-panel, .reports-section, .admin-panel {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Дополнительные улучшения */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--info);
+        }
+
+        .notification i {
+            font-size: 1.5rem;
+        }
+
+        .notification.success i {
+            color: var(--success);
+        }
+
+        .notification.error i {
+            color: var(--danger);
+        }
+
+        .notification.warning i {
+            color: var(--warning);
+        }
+
+        .notification.info i {
+            color: var(--info);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .close-notification {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .close-notification:hover {
+            color: var(--dark);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--gray-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--gray-light);
+            background: white;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(30, 87, 153, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background: var(--gray-light);
+            color: var(--dark);
+        }
+
+        .legend {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            max-width: 200px;
+        }
+
+        .legend h4 {
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .legend-new { background-color: var(--warning); }
+        .legend-pending { background-color: var(--accent); }
+        .legend-in-progress { background-color: var(--info); }
+        .legend-cleaned { background-color: var(--success); }
+
+        .legend-label {
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+
+        /* Улучшенные анимации и переходы */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(30, 87, 153, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(30, 87, 153, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(30, 87, 153, 0);
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .tooltip:after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--dark);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .tooltip:hover:before,
+        .tooltip:hover:after {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-map-marked-alt"></i>
+                <h1 data-i18n="app.title">Карта чистоты Каспийского побережья</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a id="nav-main"><i class="fas fa-home"></i> <span data-i18n="nav.main">Главная</span></a></li>
+                    <li><a id="nav-admin"><i class="fas fa-user-shield"></i> <span data-i18n="nav.admin">Режим администратора</span></a></li>
+                    <li><a id="nav-about"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">О проекте</span></a></li>
+                    <li><a id="nav-stats"><i class="fas fa-chart-pie"></i> <span>Статистика</span></a></li>
+                    <li><a id="nav-volunteers"><i class="fas fa-hands-helping"></i> <span data-i18n="nav.volunteers">Волонтёрам</span></a></li>
+                    <li><a id="nav-contacts"><i class="fas fa-envelope"></i> <span data-i18n="nav.contacts">Контакты</span></a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <button class="btn btn-secondary" id="loginBtn">Войти</button>
+                <button class="btn btn-primary" id="reportBtn">Сообщить о загрязнении</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="main-content">
+            <div class="dashboard">
+                <div id="map">
+                    <div class="map-instruction">
+                        <i class="fas fa-mouse-pointer"></i> Двойной клик для добавления метки
+                    </div>
+                </div>
+                <div class="stats-panel">
+                    <h2 data-i18n="stats.pollution">Статистика загрязнений</h2>
+                    <div class="stat-item">
+                        <span data-i18n="stats.total_points">Всего отмечено точек:</span>
+                        <span class="stat-value" id="total-points">7</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="stats.need_cleaning">Требуют очистки:</span>
+                        <span class="stat-value" id="pending-points">6</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="stats.in_progress">В процессе очистки:</span>
+                        <span class="stat-value" id="inprogress-points">2</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="stats.cleaned">Очищено:</span>
+                        <span class="stat-value" id="cleaned-points">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="stats.recent_week">За последнюю неделю:</span>
+                        <span class="stat-value" id="recent-points">1</span>
+                    </div>
+                    
+                    <h2 data-i18n="stats.pollution_types" style="margin-top: 1.5rem;">Типы загрязнений</h2>
+                    <div class="stat-item">
+                        <span data-i18n="pollution.household">Бытовой мусор:</span>
+                        <span class="stat-value" id="household-points">2</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="pollution.oil">Нефтяные пятна:</span>
+                        <span class="stat-value" id="oil-points">3</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="pollution.industrial">Промышленные отходы:</span>
+                        <span class="stat-value" id="industrial-points">2</span>
+                    </div>
+                    <div class="stat-item">
+                        <span data-i18n="pollution.other">Другое:</span>
+                        <span class="stat-value" id="other-points">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="filter-group">
+                    <label for="statusFilter" data-i18n="filters.status">Статус:</label>
+                    <select id="statusFilter">
+                        <option value="all" data-i18n="filters.all">Все точки</option>
+                        <option value="new" data-i18n="status.new">Новые</option>
+                        <option value="in-progress" data-i18n="status.in_progress">В работе</option>
+                        <option value="cleaned" data-i18n="status.cleaned">Очищено</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="typeFilter" data-i18n="filters.type">Тип загрязнения:</label>
+                    <select id="typeFilter">
+                        <option value="all" data-i18n="filters.all">Все типы</option>
+                        <option value="household" data-i18n="pollution.household">Бытовой мусор</option>
+                        <option value="oil" data-i18n="pollution.oil">Нефтяное пятно</option>
+                        <option value="industrial" data-i18n="pollution.industrial">Промышленные отходы</option>
+                        <option value="other" data-i18n="pollution.other">Другое</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="dateFilter" data-i18n="filters.period">За период:</label>
+                    <select id="dateFilter">
+                        <option value="all" data-i18n="filters.all_time">За всё время</option>
+                        <option value="week" data-i18n="filters.week">За неделю</option>
+                        <option value="month" data-i18n="filters.month">За месяц</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="exportBtn">
+                    <i class="fas fa-download"></i> <span data-i18n="actions.export">Экспорт отчёта</span>
+                </button>
+            </div>
+
+            <div class="reports-section">
+                <h2 data-i18n="report.new_pollution">Сообщить о новом загрязнении</h2>
+                <form class="report-form" id="pollutionForm">
+                    <div class="form-group">
+                        <label for="pollutionType" data-i18n="report.pollution_type">Тип загрязнения *</label>
+                        <select id="pollutionType" required>
+                            <option value="" data-i18n="report.select_type">Выберите тип</option>
+                            <option value="household" data-i18n="pollution.household">Бытовой мусор</option>
+                            <option value="oil" data-i18n="pollution.oil">Нефтяное пятно</option>
+                            <option value="industrial" data-i18n="pollution.industrial">Промышленные отходы</option>
+                            <option value="other" data-i18n="pollution.other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location" data-i18n="report.location">Местоположение *</label>
+                        <input type="text" id="location" placeholder="Сделайте двойной клик на карте для выбора" required readonly data-i18n-placeholder="report.location_placeholder">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description" data-i18n="report.description">Описание проблемы *</label>
+                        <textarea id="description" placeholder="Опишите проблему подробнее..." required data-i18n-placeholder="report.description_placeholder"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label data-i18n="report.photos">Фотографии (необязательно, можно выбрать несколько)</label>
+                        <div class="file-upload" id="fileUpload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p data-i18n="report.upload_photos">Нажмите для загрузки фотографий</p>
+                            <input type="file" id="photoUpload" accept="image/*" multiple style="display: none;">
+                            <button type="button" class="remove-photo" id="removePhoto">&times;</button>
+                            <div class="file-preview-container" id="filePreviewContainer"></div>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="actions.submit">Отправить сообщение</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="admin-panel">
+            <div class="admin-header">
+                <h2>Режим администратора <span class="admin-indicator">Администратор: Мурад</span></h2>
+                <button class="btn btn-secondary" id="logoutAdminBtn">
+                    <i class="fas fa-sign-out-alt"></i> Выйти из режима администратора
+                </button>
+            </div>
+            
+            <div class="admin-tabs">
+                <div class="admin-tab active" data-tab="moderation">Модерация сообщений</div>
+                <div class="admin-tab" data-tab="points">Управление метками</div>
+                <div class="admin-tab" data-tab="photos">Модерация фото</div>
+                <div class="admin-tab" data-tab="broadcast">Рассылка волонтёрам</div>
+            </div>
+
+            <div id="moderation-section" class="admin-section active">
+                <div class="pending-reports">
+                    <h3>Сообщения на модерации</h3>
+                    <div id="pending-reports-list">
+                    </div>
+                </div>
+            </div>
+
+            <div id="points-section" class="admin-section">
+                <h3>Управление существующими метками</h3>
+                <p>Нажмите на метку на карте, чтобы удалить её, или используйте список ниже:</p>
+                
+                <div class="existing-points-list" id="existing-points-list">
+                </div>
+            </div>
+            
+            <!-- Секция модерации фото -->
+            <div id="photos-section" class="admin-section">
+                <h3>Фотографии на модерации</h3>
+                <div id="pending-photos-list">
+                    <!-- Список фото будет заполняться динамически -->
+                </div>
+            </div>
+            <!-- Вкладка рассылки (будет динамически показана) -->
+            <div id="broadcast-section" class="admin-section">
+                <h3>Рассылка волонтёрам</h3>
+                <form id="broadcastForm" style="margin-bottom:1.2em;">
+                    <div class="form-group full-width">
+                        <label for="broadcastMessage">Сообщение для волонтёров *</label>
+                        <textarea id="broadcastMessage" required style="min-height:70px;"></textarea>
+                    </div>
+                    <div class="form-group" style="max-width:380px;">
+                        <label for="broadcastTag">Метка цели (необязательно)</label>
+                        <select id="broadcastTag">
+                            <option value="">Без метки</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Разослать</button>
+                </form>
+                <div id="broadcastResult" style="color:green;"></div>
+            </div>
+        </div>
+
+        <!-- Раздел "О проекте" -->
+        <div id="about-section" class="about-section">
+            <h2>О проекте "Карта чистоты Каспийского побережья"</h2>
+            <div class="about-content">
+                <p>Проект "Карта чистоты Каспийского побережья" — это интерактивная платформа, созданная для мониторинга и борьбы с загрязнением побережья Каспийского моря. Наша миссия — объединить усилия местных жителей, волонтеров, экологов и властей для сохранения уникальной природы Каспийского региона.</p>
+                
+                <h3>Цели проекта:</h3>
+                <ul>
+                    <li>Создание общедоступной системы мониторинга загрязнений побережья</li>
+                    <li>Привлечение внимания к экологическим проблемам Каспийского моря</li>
+                    <li>Организация эффективных мероприятий по очистке побережья</li>
+                    <li>Содействие взаимодействию между гражданами и ответственными органами</li>
+                </ul>
+
+                <h3>Как это работает:</h3>
+                <ul>
+                    <li><strong>Любой пользователь</strong> может отметить на карте место загрязнения, добавить описание и фотографию</li>
+                    <li><strong>Волонтеры и экологические организации</strong> видят "горячие точки" и могут организовать уборку</li>
+                    <li><strong>Местные власти</strong> получают актуальную информацию о проблемных зонах</li>
+                    <li><strong>Администраторы</strong> модерируют сообщения и координируют работу</li>
+                </ul>
+
+                <h3>Типы загрязнений, которые можно отметить:</h3>
+                <ul>
+                    <li><strong>Бытовой мусор</strong> — пластик, стекло, бумага и другие отходы</li>
+                    <li><strong>Нефтяные пятна</strong> — загрязнения нефтепродуктами</li>
+                    <li><strong>Промышленные отходы</strong> — выбросы предприятий</li>
+                    <li><strong>Другие виды загрязнений</strong> — строительный мусор, опасные отходы и т.д.</li>
+                </ul>
+
+                <h3>Присоединяйтесь к нам!</h3>
+                <p>Каспийское море — уникальная экосистема, нуждающаяся в нашей защите. Вместе мы можем сделать побережье чище и сохранить его для будущих поколений.</p>
+                
+                <p>Проект разработан в рамках экологической инициативы и открыт для сотрудничества с организациями и волонтерами.</p>
+            </div>
+        </div>
+
+        <!-- Раздел "Статистика" -->
+        <div id="stats-section" class="about-section" style="display: none;">
+            <h2 style="color:#1e5799;" data-i18n="stats.title">Статистика</h2>
+            <div class="about-content">
+                <div class="controls" style="margin-top:0">
+                    <div class="filter-group">
+                        <label for="statsStatusFilter" data-i18n="filters.status">Статус:</label>
+                        <select id="statsStatusFilter">
+                            <option value="all" data-i18n="filters.all">Все</option>
+                            <option value="new" data-i18n="status.new">Новые</option>
+                            <option value="pending">На модерации</option>
+                            <option value="in-progress" data-i18n="status.in_progress">В работе</option>
+                            <option value="cleaned" data-i18n="status.cleaned">Очищено</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statsTypeFilter" data-i18n="filters.type">Тип загрязнения:</label>
+                        <select id="statsTypeFilter">
+                            <option value="all" data-i18n="filters.all">Все</option>
+                            <option value="household" data-i18n="pollution.household">Бытовой мусор</option>
+                            <option value="oil" data-i18n="pollution.oil">Нефтяное пятно</option>
+                            <option value="industrial" data-i18n="pollution.industrial">Промышленные отходы</option>
+                            <option value="other" data-i18n="pollution.other">Другое</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statsDateFilter" data-i18n="filters.period">За период:</label>
+                        <select id="statsDateFilter">
+                            <option value="all" data-i18n="filters.all_time">За всё время</option>
+                            <option value="week" data-i18n="filters.week">За неделю</option>
+                            <option value="month" data-i18n="filters.month">За месяц</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statsChartKind">Диаграмма:</label>
+                        <select id="statsChartKind">
+                            <option value="by-status">По статусам (столбчатая)</option>
+                            <option value="by-type">По типам (круговая)</option>
+                            <option value="by-date">По датам (линейная)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="statsExportBtn"><i class="fas fa-download"></i> <span data-i18n="actions.export">Экспорт отчёта</span></button>
+                </div>
+                <div style="background:#fff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.08);padding:16px">
+                    <canvas id="statsChart" height="200"></canvas>
+                </div>
+                <div style="margin-top:16px;background:#fff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.08);padding:12px">
+                    <div style="font-weight:600;margin:4px 0 10px 0;color:#2b3a55">Данные</div>
+                    <div style="overflow:auto">
+                        <table id="statsTable" style="width:100%;border-collapse:collapse;min-width:720px">
+                            <thead>
+                                <tr style="background:#f3f6fb;color:#1e5799;text-align:left">
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">#</th>
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">Тип</th>
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">Статус</th>
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">Описание</th>
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">Дата</th>
+                                    <th style="padding:8px 10px;border-bottom:1px solid #e6edf5">Координаты</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statsTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Раздел "Волонтёрам" -->
+        <div id="volunteers-section" class="about-section" style="display: none;">
+            <h2 style="color:#1e5799;">Волонтёрам: Присоединиться и Помогать</h2>
+            <div class="about-content">
+                <p>Регистрация в качестве волонтёра даёт возможность получать приглашения к эко-акциям, участвовать в командных проектах и влиять на чистоту побережья!</p>
+                <!-- Админ-блок: база волонтёров -->
+                <div id="volunteers-admin-block" style="display:none;margin:16px 0 20px 0;">
+                    <div style="background:#f9f9f9;border-left:4px solid #1e5799;padding:12px 16px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                        <div style="font-weight:600;color:#1e5799">База данных волонтёров (только для администратора)</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <button id="refreshVolunteersBtn" class="btn btn-info btn-small">Обновить список</button>
+                            <button id="clearAllVolunteersBtn" class="btn btn-danger btn-small">Удалить всех</button>
+                        </div>
+                    </div>
+                    <div id="volunteersTableWrapper" style="overflow:auto;border:1px solid #eee;border-radius:6px">
+                        <table id="volunteersTable" style="width:100%;border-collapse:collapse;min-width:720px">
+                            <thead>
+                                <tr style="background:#f3f6fb;color:#1e5799;text-align:left">
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">#</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">ФИО</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">Телефон</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">Email</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">Комментарий</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">Дата</th>
+                                    <th style="padding:10px 12px;border-bottom:1px solid #e6edf5">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="volunteersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <h3>Зарегистрироваться волонтёром</h3>
+                <form id="volunteerRegisterForm" style="max-width:440px;">
+                    <div class="form-group">
+                        <label for="volunteerName">ФИО</label>
+                        <input type="text" id="volunteerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="volunteerPhone">Телефон</label>
+                        <input type="text" id="volunteerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="volunteerEmail">Email</label>
+                        <input type="email" id="volunteerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="volunteerComment">Комментарий (необязательно)</label>
+                        <textarea id="volunteerComment"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" style="width:100%">Зарегистрироваться</button>
+                    </div>
+                    <p id="volunteerMsg" style="color:green;text-align:center;display:none;"></p>
+                </form>
+                <hr style="margin:2.5rem 0 1.5rem 0;">
+                <div style="color:#444;margin-bottom:0.5em">После заполнения формы вы будете получать рассылки и приглашения от команды проекта и координаторов, а также сможете предложить свои инициативы по очистке побережья!</div>
+            </div>
+        </div>
+
+        <!-- Раздел "Контакты" -->
+        <div id="contacts-section" class="about-section" style="display: none;">
+            <h2 style="color:#1e5799;">Контакты команды и координаторов</h2>
+            <ul style="padding-left:0;list-style:none;max-width:550px">
+		<li style="margin-bottom:1.2em"><b>Казимагомедов Касум Кабулахварович</b><br>ВКонтакте: <a href="https://vk.com/wonder_of_me" target="_blank">@wonder_of_me</a>, Телефон: 89674059688<br>Юридический институт Дагестанского Государственного Университета, Избербаш</li>
+                <li style="margin-bottom:1.2em"><b>Салимханов Хаджимурад Абдулатипович</b><br>Telegram: <a href="https://t.me/muradzik" target="_blank">@muradzik</a>, Телефон: 89248287777<br>Юридический институт Дагестанского Государственного Университета, Махачкала</li>
+                <li style="margin-bottom:1.2em"><b>Шихшабеков Мурад Магомедович</b><br>Telegram: <a href="https://t.me/Shaikh696" target="_blank">@Shaikh696</a>, Телефон: 89640491378<br>Юридический институт Дагестанского Государственного Университета, Каспийск</li>
+                <li style="margin-bottom:1.2em"><b>Магомедов Джабай Кадиевич</b><br>Telegram: <a href="https://t.me/musmus_usa" target="_blank">@musmus_usa</a>, Телефон: 89964227055<br>Юридический институт Дагестанского Государственного Университета, Каспийск</li>
+                <li style="margin-bottom:1.2em"><b>Нурмагомедов Рамазан Мурадович</b><br>Telegram: <a href="https://t.me/t1ampony" target="_blank">@t1ampony</a>, Телефон: 89898994816<br>Юридический институт Дагестанского Государственного Университета, Махачкала</li>
+            </ul>
+            <hr style="margin:2rem 0 1rem 0">
+            <div style="color:#444;margin-bottom:0.5em">По любым вопросам участия или сотрудничества связывайтесь с нашими координаторами!</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Вход в систему</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Имя пользователя</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+                    Для входа в режим администратора: имя - "Мурад", пароль - "1234"
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления фото к метке -->
+    <div class="modal" id="addPhotoModal">
+        <div class="modal-content photo-modal">
+            <div class="modal-header">
+                <h2>Добавить фотографии к метке</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Выберите фотографии (можно несколько)</label>
+                <div class="file-upload" id="addPhotoFileUpload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Нажмите для загрузки фотографий</p>
+                    <input type="file" id="addPhotoUpload" accept="image/*" multiple style="display: none;">
+                    <div class="photo-modal-preview" id="addPhotoPreviewContainer"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="submitPhotosBtn" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i> Отправить фотографии на модерацию
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Карта чистоты Каспийского побережья &copy; 2025</p>
+        <p>Проект разработан для улучшения экологической ситуации в регионе</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_ключ_api&lang=ru_RU" type="text/javascript"></script>
+    <script>
+        // Инициализация Яндекс.Карт
+        ymaps.ready(init);
+
+        let map;
+        let selectedPlacemark = null;
+        let pollutionPlacemarks = [];
+        let isAdmin = false;
+        let pendingReports = JSON.parse(localStorage.getItem('pendingReports')) || [];
+        let approvedReports = JSON.parse(localStorage.getItem('approvedReports')) || [];
+        let currentPhotos = [];
+        let pendingPhotos = JSON.parse(localStorage.getItem('pendingPhotos')) || [];
+        let currentPointForPhotos = null;
+
+        // Загружаем данные о точках загрязнения из localStorage или используем примерные данные
+        let pollutionData = JSON.parse(localStorage.getItem('pollutionData'));
+        if (!pollutionData) {
+            // Пример данных о загрязнениях с российскими названиями
+            pollutionData = [
+                { id: 1, lat: 42.1, lng: 49.5, type: 'household', status: 'new', 
+                  description: 'Скопление пластикового мусора на пляже в Дагестане', date: '2025-10-15',
+                  photos: [] },
+                { id: 2, lat: 42.3, lng: 50.2, type: 'oil', status: 'in-progress', 
+                  description: 'Нефтяное пятно в прибрежной зоне возле Махачкалы', date: '2024-10-12',
+                  photos: [] },
+                { id: 3, lat: 41.8, lng: 50.5, type: 'industrial', status: 'new', 
+                  description: 'Выброс промышленных отходов в Астраханской области', date: '2023-09-10',
+                  photos: [] },
+                { id: 4, lat: 42.5, lng: 49.8, type: 'household', status: 'cleaned', 
+                  description: 'Бытовой мусор на побережье в Калмыкии', date: '2023-11-05',
+                  photos: [] },
+                { id: 5, lat: 42.2, lng: 51.0, type: 'other', status: 'new', 
+                  description: 'Строительный мусор в прибрежной зоне', date: '2023-12-18',
+                  photos: [] },
+                { id: 6, lat: 41.9, lng: 50.8, type: 'household', status: 'in-progress', 
+                  description: 'Пластиковые отходы на пляже в Дагестане', date: '2024-04-14',
+                  photos: [] },
+                { id: 7, lat: 42.6, lng: 49.2, type: 'oil', status: 'new', 
+                  description: 'Загрязнение нефтепродуктами возле Дербента', date: '2023-10-20',
+                  photos: [] }
+            ];
+            // Сохраняем начальные данные в localStorage
+            localStorage.setItem('pollutionData', JSON.stringify(pollutionData));
+        }
+
+        // Цвета иконок для разных типов загрязнений
+        const pollutionColors = {
+            household: 'islands#redIcon',
+            oil: 'islands#darkOrangeIcon',
+            industrial: 'islands#brownIcon',
+            other: 'islands#yellowIcon'
+        };
+
+        // Статусные бейджи
+        const statusBadges = {
+            new: '<span class="status-badge status-new">Новый</span>',
+            pending: '<span class="status-badge status-pending">На модерации</span>',
+            'in-progress': '<span class="status-badge status-in-progress">В работе</span>',
+            cleaned: '<span class="status-badge status-cleaned">Очищено</span>'
+        };
+
+        // Типы загрязнений на русском
+        const pollutionTypes = {
+            household: 'Бытовой мусор',
+            oil: 'Нефтяное пятно',
+            industrial: 'Промышленные отходы',
+            other: 'Другое'
+        };
+
+        function init() {
+            // Создание карты
+            map = new ymaps.Map('map', {
+                center: [42.0, 50.0],
+                zoom: 7,
+                controls: ['zoomControl', 'fullscreenControl', 'typeSelector', 'searchControl']
+            });
+
+            // Добавление меток загрязнений
+            addPollutionPlacemarks();
+
+            // Обработчик двойного клика по карте
+            map.events.add('dblclick', function(e) {
+                const coords = e.get('coords');
+                selectLocation(coords);
+            });
+
+            // Обновление статистики
+            updateStats();
+        }
+
+        function addPollutionPlacemarks() {
+            // Очищаем существующие метки
+            pollutionPlacemarks.forEach(item => {
+                map.geoObjects.remove(item.placemark);
+            });
+            pollutionPlacemarks = [];
+
+            // Добавляем одобренные отчеты
+            approvedReports.forEach(report => {
+                const placemark = createPlacemark(report);
+                map.geoObjects.add(placemark);
+                pollutionPlacemarks.push({
+                    placemark: placemark,
+                    data: report
+                });
+            });
+
+            // Добавляем существующие данные
+            pollutionData.forEach(point => {
+                const placemark = createPlacemark(point);
+                map.geoObjects.add(placemark);
+                pollutionPlacemarks.push({
+                    placemark: placemark,
+                    data: point
+                });
+            });
+        }
+
+        function createPlacemark(point) {
+            // Получаем одобренные фото для этой метки
+            const approvedPhotos = point.photos ? point.photos.filter(photo => photo.approved) : [];
+            
+            const placemark = new ymaps.Placemark([point.lat, point.lng], {
+                balloonContentHeader: pollutionTypes[point.type],
+                balloonContentBody: `
+                    <div class="marker-popup">
+                        ${approvedPhotos.length > 0 ? 
+                          `<div class="photo-gallery">
+                            ${approvedPhotos.map(photo => `<div class="photo-item"><img src="${photo.url}" alt="Фото загрязнения"></div>`).join('')}
+                           </div>` : ''}
+                        <div class="description">${point.description}</div>
+                        <div class="meta">
+                            ${statusBadges[point.status]}<br>
+                            Дата: ${point.date}
+                            ${!isAdmin ? `<br><button class="btn btn-info btn-small add-photo-btn" data-id="${point.id}">Добавить фото</button>` : ''}
+                            ${isAdmin ? `<br><button class="btn btn-danger btn-small delete-marker-btn" data-id="${point.id}">Удалить метку</button>` : ''}
+                        </div>
+                    </div>
+                `,
+                hintContent: pollutionTypes[point.type]
+            }, {
+                preset: pollutionColors[point.type]
+            });
+
+            // Добавляем обработчик клика для администратора
+            if (isAdmin) {
+                placemark.events.add('click', function(e) {
+                    if (isAdmin) {
+                        const result = confirm('Вы действительно хотите удалить эту метку?');
+                        if (result) {
+                            deletePlacemark(point.id);
+                        }
+                    }
+                });
+            }
+
+            return placemark;
+        }
+
+        function selectLocation(coords) {
+            // Удаляем предыдущую выбранную метку
+            if (selectedPlacemark) {
+                map.geoObjects.remove(selectedPlacemark);
+            }
+
+            // Создаем новую метку для выбранного местоположения
+            selectedPlacemark = new ymaps.Placemark(coords, {
+                hintContent: 'Выбранное местоположение',
+                balloonContent: 'Здесь будет отмечено новое загрязнение'
+            }, {
+                preset: 'islands#greenIcon',
+                draggable: true // Разрешаем перемещение метки
+            });
+
+            // Обработчик перемещения метки
+            selectedPlacemark.events.add('dragend', function() {
+                const newCoords = selectedPlacemark.geometry.getCoordinates();
+                updateLocationField(newCoords);
+            });
+
+            map.geoObjects.add(selectedPlacemark);
+            
+            // Обновляем поле местоположения в форме
+            updateLocationField(coords);
+            
+            // Показываем балун с информацией
+            selectedPlacemark.balloon.open();
+        }
+
+        function updateLocationField(coords) {
+            document.getElementById('location').value = `Широта: ${coords[0].toFixed(6)}, Долгота: ${coords[1].toFixed(6)}`;
+        }
+
+        function updateStats() {
+            // Обновляем статистику на основе данных
+            const total = pollutionPlacemarks.length;
+            document.getElementById('total-points').textContent = total;
+            
+            // Здесь можно добавить более сложную логику подсчета статистики
+        }
+
+        function showAdminPanel() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+            updatePendingReportsList();
+            updateExistingPointsList();
+            updatePendingPhotosList();
+            
+            // Обновляем кнопку входа
+            document.getElementById('loginBtn').textContent = 'Выход из системы';
+            document.getElementById('loginBtn').className = 'btn btn-danger';
+            
+            // Показываем пункт меню "Статистика" для администратора
+            const navStats = document.getElementById('nav-stats');
+            if (navStats && navStats.parentElement) {
+                navStats.parentElement.style.display = '';
+            }
+            
+            // Добавляем инструкцию для администратора
+            if (!document.querySelector('.admin-map-instruction')) {
+                const adminInstruction = document.createElement('div');
+                adminInstruction.className = 'admin-map-instruction';
+                adminInstruction.innerHTML = '<i class="fas fa-trash"></i> Режим администратора: нажмите на любую метку для удаления';
+                document.getElementById('map').appendChild(adminInstruction);
+            }
+            
+            // Обновляем метки с кнопками удаления
+            addPollutionPlacemarks();
+        }
+
+        function showMainContent() {
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+            
+            // Обновляем кнопку входа
+            if (isAdmin) {
+                document.getElementById('loginBtn').textContent = 'Выход из системы';
+                document.getElementById('loginBtn').className = 'btn btn-danger';
+            } else {
+                document.getElementById('loginBtn').textContent = 'Войти';
+                document.getElementById('loginBtn').className = 'btn btn-secondary';
+            }
+            // Пункт меню "Статистика" доступен всем
+            const navStats2 = document.getElementById('nav-stats');
+            if (navStats2 && navStats2.parentElement) {
+                navStats2.parentElement.style.display = '';
+            }
+            
+            // Убираем инструкцию для администратора
+            const adminInstruction = document.querySelector('.admin-map-instruction');
+            if (adminInstruction) {
+                adminInstruction.remove();
+            }
+            
+            // Обновляем метки без кнопок удаления
+            addPollutionPlacemarks();
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            showMainContent();
+            alert('Вы вышли из режима администратора');
+        }
+
+        function showAboutSection() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'block';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+        }
+
+        function showVolunteersSection() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'block';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+            // если админ — показать базу волонтёров
+            renderVolunteersAdminBlock();
+        }
+
+        function showContactsSection() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'block';
+        }
+
+        function showStatsSection() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'block';
+            const statsExportBtn = document.getElementById('statsExportBtn');
+            if (statsExportBtn) {
+                statsExportBtn.style.display = isAdmin ? 'inline-block' : 'none';
+            }
+            renderStatsView();
+        }
+
+        function updatePendingReportsList() {
+            const listContainer = document.getElementById('pending-reports-list');
+            listContainer.innerHTML = '';
+
+            if (pendingReports.length === 0) {
+                listContainer.innerHTML = '<p>Нет сообщений на модерации</p>';
+                return;
+            }
+
+            pendingReports.forEach((report, index) => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                reportCard.innerHTML = `
+                    <h4>${pollutionTypes[report.type]}</h4>
+                    <p><strong>Местоположение:</strong> Ш: ${report.lat.toFixed(4)}, Д: ${report.lng.toFixed(4)}</p>
+                    <p><strong>Описание:</strong> ${report.description}</p>
+                    ${report.photos && report.photos.length > 0 ? 
+                      `<p><strong>Фото:</strong> 
+                       <div class="photo-gallery">
+                         ${report.photos.map(photo => `<div class="photo-item"><img src="${photo}" alt="Фото загрязнения"></div>`).join('')}
+                       </div>
+                       </p>` : ''}
+                    <p><strong>Дата отправки:</strong> ${report.date}</p>
+                    <div class="report-actions">
+                        <button class="btn btn-primary approve-btn" data-index="${index}">Одобрить</button>
+                        <button class="btn btn-danger reject-btn" data-index="${index}">Отклонить</button>
+                    </div>
+                `;
+                listContainer.appendChild(reportCard);
+            });
+
+            // Добавляем обработчики для кнопок
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    approveReport(index);
+                });
+            });
+
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    rejectReport(index);
+                });
+            });
+        }
+
+        function updateExistingPointsList() {
+            const listContainer = document.getElementById('existing-points-list');
+            listContainer.innerHTML = '';
+
+            const allPoints = [...pollutionData, ...approvedReports];
+            
+            if (allPoints.length === 0) {
+                listContainer.innerHTML = '<p>Нет существующих меток</p>';
+                return;
+            }
+
+            allPoints.forEach((point, index) => {
+                const approvedPhotos = point.photos ? point.photos.filter(photo => photo.approved) : [];
+                
+                const pointCard = document.createElement('div');
+                pointCard.className = 'point-card';
+                pointCard.innerHTML = `
+                    <div class="point-info">
+                        <h4>${pollutionTypes[point.type]}</h4>
+                        <p><strong>Местоположение:</strong> Ш: ${point.lat.toFixed(4)}, Д: ${point.lng.toFixed(4)}</p>
+                        <p><strong>Описание:</strong> ${point.description}</p>
+                        ${approvedPhotos.length > 0 ? 
+                          `<p><strong>Фото:</strong> 
+                           <div class="photo-gallery">
+                             ${approvedPhotos.map(photo => `<div class="photo-item"><img src="${photo.url}" alt="Фото загрязнения"></div>`).join('')}
+                           </div>
+                           </p>` : ''}
+                        <p><strong>Статус:</strong> 
+                            <select class="status-select" data-id="${point.id}">
+                                <option value="new" ${point.status === 'new' ? 'selected' : ''}>Новый</option>
+                                <option value="in-progress" ${point.status === 'in-progress' ? 'selected' : ''}>В работе</option>
+                                <option value="cleaned" ${point.status === 'cleaned' ? 'selected' : ''}>Очищено</option>
+                            </select>
+                        </p>
+                        <p><strong>Дата:</strong> ${point.date}</p>
+                    </div>
+                    <div class="point-actions">
+                        <button class="btn btn-danger delete-point-btn" data-id="${point.id}">Удалить</button>
+                    </div>
+                `;
+                listContainer.appendChild(pointCard);
+            });
+
+            // Добавляем обработчики для кнопок удаления
+            document.querySelectorAll('.delete-point-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deletePlacemark(id);
+                });
+            });
+
+            // Добавляем обработчики для изменения статуса
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    const newStatus = this.value;
+                    updatePointStatus(id, newStatus);
+                });
+            });
+        }
+
+        function updatePendingPhotosList() {
+            const listContainer = document.getElementById('pending-photos-list');
+            listContainer.innerHTML = '';
+
+            if (pendingPhotos.length === 0) {
+                listContainer.innerHTML = '<p>Нет фотографий на модерации</p>';
+                return;
+            }
+
+            pendingPhotos.forEach((photoItem, index) => {
+                const photoCard = document.createElement('div');
+                photoCard.className = 'report-card';
+                photoCard.innerHTML = `
+                    <h4>Фотография для метки #${photoItem.pointId}</h4>
+                    <p><strong>Дата загрузки:</strong> ${photoItem.date}</p>
+                    <div class="photo-gallery">
+                        <div class="photo-item">
+                            <img src="${photoItem.photoUrl}" alt="Фото на модерации">
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary approve-photo-btn" data-index="${index}">Одобрить</button>
+                        <button class="btn btn-danger reject-photo-btn" data-index="${index}">Отклонить</button>
+                    </div>
+                `;
+                listContainer.appendChild(photoCard);
+            });
+
+            // Добавляем обработчики для кнопок
+            document.querySelectorAll('.approve-photo-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    approvePhoto(index);
+                });
+            });
+
+            document.querySelectorAll('.reject-photo-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    rejectPhoto(index);
+                });
+            });
+        }
+
+        function approveReport(index) {
+            const report = pendingReports[index];
+            report.status = 'new';
+            report.approvedDate = new Date().toISOString().split('T')[0];
+            
+            // Преобразуем фото в правильный формат
+            if (report.photos && report.photos.length > 0) {
+                report.photos = report.photos.map(photoUrl => ({
+                    url: photoUrl,
+                    approved: true,
+                    date: report.date
+                }));
+            } else {
+                report.photos = [];
+            }
+            
+            // Добавляем в одобренные отчеты
+            approvedReports.push(report);
+            localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
+            
+            // Удаляем из ожидающих
+            pendingReports.splice(index, 1);
+            localStorage.setItem('pendingReports', JSON.stringify(pendingReports));
+            
+            // Обновляем карту и список
+            addPollutionPlacemarks();
+            updatePendingReportsList();
+            updateExistingPointsList();
+            updateStats();
+            
+            alert('Сообщение одобрено и теперь отображается на карте');
+        }
+
+        function rejectReport(index) {
+            pendingReports.splice(index, 1);
+            localStorage.setItem('pendingReports', JSON.stringify(pendingReports));
+            updatePendingReportsList();
+            alert('Сообщение отклонено и удалено');
+        }
+
+        function approvePhoto(index) {
+            const photoItem = pendingPhotos[index];
+            
+            // Находим точку, к которой относится фото
+            let point = pollutionData.find(p => p.id === photoItem.pointId);
+            if (!point) {
+                point = approvedReports.find(p => p.id === photoItem.pointId);
+            }
+            
+            if (point) {
+                // Инициализируем массив photos, если его нет
+                if (!point.photos) {
+                    point.photos = [];
+                }
+                
+                // Добавляем фото с отметкой об одобрении
+                point.photos.push({
+                    url: photoItem.photoUrl,
+                    approved: true,
+                    date: photoItem.date
+                });
+                
+                // Сохраняем изменения
+                if (approvedReports.find(p => p.id === photoItem.pointId)) {
+                    localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
+                } else {
+                    localStorage.setItem('pollutionData', JSON.stringify(pollutionData));
+                }
+            }
+            
+            // Удаляем фото из списка ожидающих
+            pendingPhotos.splice(index, 1);
+            localStorage.setItem('pendingPhotos', JSON.stringify(pendingPhotos));
+            
+            // Обновляем интерфейс
+            updatePendingPhotosList();
+            addPollutionPlacemarks();
+            
+            alert('Фотография одобрена и добавлена к метке');
+        }
+
+        function rejectPhoto(index) {
+            pendingPhotos.splice(index, 1);
+            localStorage.setItem('pendingPhotos', JSON.stringify(pendingPhotos));
+            updatePendingPhotosList();
+            alert('Фотография отклонена и удалена');
+        }
+
+        function deletePlacemark(id) {
+            // Удаляем из approvedReports
+            const approvedIndex = approvedReports.findIndex(item => item.id === id);
+            if (approvedIndex !== -1) {
+                approvedReports.splice(approvedIndex, 1);
+                localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
+            }
+            
+            // Удаляем из pollutionData
+            const dataIndex = pollutionData.findIndex(item => item.id === id);
+            if (dataIndex !== -1) {
+                pollutionData.splice(dataIndex, 1);
+                localStorage.setItem('pollutionData', JSON.stringify(pollutionData));
+            }
+            
+            // Обновляем карту
+            addPollutionPlacemarks();
+            updateExistingPointsList();
+            updateStats();
+            
+            alert('Метка успешно удалена');
+        }
+
+        function updatePointStatus(id, newStatus) {
+            // Обновляем статус в approvedReports
+            const approvedIndex = approvedReports.findIndex(item => item.id === id);
+            if (approvedIndex !== -1) {
+                approvedReports[approvedIndex].status = newStatus;
+                localStorage.setItem('approvedReports', JSON.stringify(approvedReports));
+            }
+            
+            // Обновляем статус в pollutionData
+            const dataIndex = pollutionData.findIndex(item => item.id === id);
+            if (dataIndex !== -1) {
+                pollutionData[dataIndex].status = newStatus;
+                localStorage.setItem('pollutionData', JSON.stringify(pollutionData));
+            }
+            
+            // Обновляем карту
+            addPollutionPlacemarks();
+            
+            alert('Статус метки обновлен');
+        }
+
+        function openAddPhotoModal(pointId) {
+            currentPointForPhotos = pointId;
+            currentPhotos = [];
+            document.getElementById('addPhotoPreviewContainer').innerHTML = '';
+            document.getElementById('addPhotoModal').style.display = 'flex';
+        }
+
+        function submitPhotos() {
+            if (currentPhotos.length === 0) {
+                alert('Пожалуйста, выберите хотя бы одну фотографию');
+                return;
+            }
+            
+            // Добавляем фото в список ожидающих модерации
+            currentPhotos.forEach(photo => {
+                const photoItem = {
+                    pointId: currentPointForPhotos,
+                    photoUrl: photo,
+                    date: new Date().toISOString().split('T')[0]
+                };
+                pendingPhotos.push(photoItem);
+            });
+            
+            localStorage.setItem('pendingPhotos', JSON.stringify(pendingPhotos));
+            
+            alert('Фотографии отправлены на модерацию администратору.');
+            document.getElementById('addPhotoModal').style.display = 'none';
+            currentPhotos = [];
+            currentPointForPhotos = null;
+        }
+
+        // Обработчики событий для модальных окон
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            if (isAdmin) {
+                logoutAdmin();
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        });
+
+        document.getElementById('logoutAdminBtn').addEventListener('click', logoutAdmin);
+
+        document.getElementById('reportBtn').addEventListener('click', () => {
+            document.getElementById('pollutionForm').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            });
+        });
+
+        // Обработчик загрузки файла для формы сообщения
+        document.getElementById('fileUpload').addEventListener('click', () => {
+            document.getElementById('photoUpload').click();
+        });
+
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                currentPhotos = [];
+                const previewContainer = document.getElementById('filePreviewContainer');
+                previewContainer.innerHTML = '';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        currentPhotos.push(e.target.result);
+                        
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'file-preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Предпросмотр">
+                            <button type="button" class="remove-preview-photo" data-index="${currentPhotos.length - 1}">&times;</button>
+                        `;
+                        previewContainer.appendChild(previewItem);
+                        
+                        // Добавляем обработчик для удаления превью
+                        previewItem.querySelector('.remove-preview-photo').addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            currentPhotos.splice(index, 1);
+                            previewItem.remove();
+                            
+                            // Обновляем индексы у оставшихся кнопок удаления
+                            const removeButtons = document.querySelectorAll('.remove-preview-photo');
+                            removeButtons.forEach((btn, idx) => {
+                                btn.setAttribute('data-index', idx);
+                            });
+                        });
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Обработчик загрузки файла для модального окна добавления фото
+        document.getElementById('addPhotoFileUpload').addEventListener('click', () => {
+            document.getElementById('addPhotoUpload').click();
+        });
+
+        document.getElementById('addPhotoUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                currentPhotos = [];
+                const previewContainer = document.getElementById('addPhotoPreviewContainer');
+                previewContainer.innerHTML = '';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        currentPhotos.push(e.target.result);
+                        
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'photo-modal-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Предпросмотр">
+                            <button type="button" class="remove-preview-photo" data-index="${currentPhotos.length - 1}">&times;</button>
+                        `;
+                        previewContainer.appendChild(previewItem);
+                        
+                        // Добавляем обработчик для удаления превью
+                        previewItem.querySelector('.remove-preview-photo').addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            currentPhotos.splice(index, 1);
+                            previewItem.remove();
+                            
+                            // Обновляем индексы у оставшихся кнопок удаления
+                            const removeButtons = document.querySelectorAll('.remove-preview-photo');
+                            removeButtons.forEach((btn, idx) => {
+                                btn.setAttribute('data-index', idx);
+                            });
+                        });
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        document.getElementById('submitPhotosBtn').addEventListener('click', submitPhotos);
+
+        // Обработчик отправки формы
+        document.getElementById('pollutionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('pollutionType').value;
+            const location = document.getElementById('location').value;
+            const description = document.getElementById('description').value;
+            
+            if (!type || !location || !description) {
+                alert('Пожалуйста, заполните все обязательные поля!');
+                return;
+            }
+            
+            if (!selectedPlacemark) {
+                alert('Пожалуйста, выберите местоположение на карте двойным кликом!');
+                return;
+            }
+            
+            // Создаем новый отчет
+            const coords = selectedPlacemark.geometry.getCoordinates();
+            const newReport = {
+                id: Date.now(),
+                lat: coords[0],
+                lng: coords[1],
+                type: type,
+                status: 'pending',
+                description: description,
+                date: new Date().toISOString().split('T')[0],
+                photos: currentPhotos
+            };
+            
+            // Добавляем в список ожидающих модерации
+            pendingReports.push(newReport);
+            localStorage.setItem('pendingReports', JSON.stringify(pendingReports));
+            
+            alert('Спасибо! Ваше сообщение отправлено на модерацию администратору.');
+            this.reset();
+            
+            // Сбрасываем фото
+            currentPhotos = [];
+            document.getElementById('filePreviewContainer').innerHTML = '';
+            
+            // Удаляем временную метку
+            if (selectedPlacemark) {
+                map.geoObjects.remove(selectedPlacemark);
+                selectedPlacemark = null;
+            }
+        });
+
+        // Обработчик входа администратора
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'Мурад' && password === '1234') {
+                isAdmin = true;
+                document.getElementById('loginModal').style.display = 'none';
+                showAdminPanel();
+                alert('Вы успешно вошли в режим администратора');
+            } else {
+                alert('Неверное имя пользователя или пароль');
+            }
+        });
+
+        // Обработчики навигации
+        document.getElementById('nav-main').addEventListener('click', showMainContent);
+        document.getElementById('nav-admin').addEventListener('click', function() {
+            if (isAdmin) {
+                showAdminPanel();
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        });
+        document.getElementById('nav-about').addEventListener('click', showAboutSection);
+        document.getElementById('nav-stats').addEventListener('click', showStatsSection);
+        document.getElementById('nav-volunteers').addEventListener('click', showVolunteersSection);
+        document.getElementById('nav-contacts').addEventListener('click', showContactsSection);
+
+        // SPA nav возвращение на главную
+        function hideAllSectionsExceptMain() {
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('about-section').style.display = 'none';
+            document.getElementById('volunteers-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('contacts-section').style.display = 'none';
+        }
+        document.getElementById('nav-main').addEventListener('click', hideAllSectionsExceptMain);
+
+        // Обработчики вкладок администратора
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Убираем активный класс у всех вкладок
+                document.querySelectorAll('.admin-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Добавляем активный класс текущей вкладке
+                this.classList.add('active');
+                
+                // Скрываем все секции
+                document.querySelectorAll('.admin-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Показываем соответствующую секцию
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-section`).classList.add('active');
+            });
+        });
+
+        // ====== Статистика: утилиты, рендер, экспорт ======
+        function getAllPointsData() {
+            const seen = new Set();
+            const all = [];
+            [...(pollutionData||[]), ...(approvedReports||[])].forEach(p => {
+                if (!seen.has(p.id)) { seen.add(p.id); all.push(p); }
+            });
+            return all;
+        }
+
+        function filterPoints(points, filters) {
+            const { status = 'all', type = 'all', date = 'all' } = filters || {};
+            return points.filter(point => {
+                if (status !== 'all' && point.status !== status) return false;
+                if (type !== 'all' && point.type !== type) return false;
+                if (date !== 'all') {
+                    const pointDate = new Date(point.date);
+                    const now = new Date();
+                    const maxDays = date === 'week' ? 7 : 30;
+                    const diff = Math.ceil(Math.abs(now - pointDate) / (1000*60*60*24));
+                    if (diff > maxDays) return false;
+                }
+                return true;
+            });
+        }
+
+        let statsChartInstance = null;
+        function renderStatsView() {
+            const statusEl = document.getElementById('statsStatusFilter');
+            const typeEl = document.getElementById('statsTypeFilter');
+            const dateEl = document.getElementById('statsDateFilter');
+            const kindEl = document.getElementById('statsChartKind');
+            const tbody = document.getElementById('statsTbody');
+            const canvas = document.getElementById('statsChart');
+            if (!statusEl || !typeEl || !dateEl || !kindEl || !tbody || !canvas) return;
+
+            const all = getAllPointsData();
+            const filtered = filterPoints(all, { status: statusEl.value, type: typeEl.value, date: dateEl.value });
+            renderStatsTable(tbody, filtered);
+            renderStatsChart(canvas, filtered, kindEl.value);
+
+            // Bind once
+            if (!canvas.dataset.bound) {
+                [statusEl, typeEl, dateEl, kindEl].forEach(el => {
+                    el.addEventListener('change', () => {
+                        const all2 = getAllPointsData();
+                        const filtered2 = filterPoints(all2, { status: statusEl.value, type: typeEl.value, date: dateEl.value });
+                        renderStatsTable(tbody, filtered2);
+                        renderStatsChart(canvas, filtered2, kindEl.value);
+                    });
+                });
+                const statsExportBtn = document.getElementById('statsExportBtn');
+                if (statsExportBtn) {
+                    statsExportBtn.addEventListener('click', function() {
+                        if (!isAdmin) { alert('Экспорт доступен только администратору.'); return; }
+                        const all3 = getAllPointsData();
+                        const filtered3 = filterPoints(all3, { status: statusEl.value, type: typeEl.value, date: dateEl.value });
+                        exportReportHTML(filtered3, { title: 'Отчёт (Статистика)', chartKind: kindEl.value });
+                    });
+                }
+                canvas.dataset.bound = '1';
+            }
+        }
+
+        function renderStatsTable(tbody, points) {
+            tbody.innerHTML = '';
+            if (points.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="6" style="padding:12px;color:#666;text-align:center">Нет данных</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            points.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #f0f0f0';
+                tr.innerHTML = `
+                    <td style="padding:8px 10px">${idx+1}</td>
+                    <td style="padding:8px 10px">${pollutionTypes[p.type]||p.type}</td>
+                    <td style="padding:8px 10px">${p.status}</td>
+                    <td style="padding:8px 10px;max-width:360px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${(p.description||'').replace(/\"/g,'&quot;')}">${escapeHtml(p.description||'')}</td>
+                    <td style="padding:8px 10px">${p.date}</td>
+                    <td style="padding:8px 10px">Ш: ${p.lat.toFixed(4)}, Д: ${p.lng.toFixed(4)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function groupByDate(points) {
+            const map = new Map();
+            points.forEach(p => {
+                const d = p.date;
+                map.set(d, (map.get(d)||0) + 1);
+            });
+            const entries = Array.from(map.entries()).sort((a,b)=> a[0].localeCompare(b[0]));
+            return { labels: entries.map(e=>e[0]), values: entries.map(e=>e[1]) };
+        }
+
+        function countByStatus(points) {
+            const statuses = ['new','pending','in-progress','cleaned'];
+            const counts = { 'new':0, 'pending':0, 'in-progress':0, 'cleaned':0 };
+            points.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+            return { labels: ['Новый','На модерации','В работе','Очищено'], values: statuses.map(s=>counts[s]) };
+        }
+
+        function countByType(points) {
+            const types = ['household','oil','industrial','other'];
+            const counts = { household:0, oil:0, industrial:0, other:0 };
+            points.forEach(p => { if (counts[p.type] !== undefined) counts[p.type]++; });
+            return { labels: types.map(t=>pollutionTypes[t]), values: types.map(t=>counts[t]) };
+        }
+
+        function renderStatsChart(canvas, points, chartKind, opts) {
+            const ctx = canvas.getContext('2d');
+            const isOffscreen = !!(opts && opts.offscreen);
+            if (!isOffscreen && statsChartInstance) { statsChartInstance.destroy(); }
+            let dataAgg;
+            let type;
+            let label = 'Количество';
+            if (chartKind === 'by-type') {
+                dataAgg = countByType(points);
+                type = 'doughnut';
+            } else if (chartKind === 'by-date') {
+                dataAgg = groupByDate(points);
+                type = 'line';
+            } else {
+                dataAgg = countByStatus(points);
+                type = 'bar';
+            }
+            const instance = new Chart(ctx, {
+                type,
+                data: {
+                    labels: dataAgg.labels,
+                    datasets: [{
+                        label,
+                        data: dataAgg.values,
+                        backgroundColor: ['#1e88e5','#43a047','#f4511e','#fdd835','#8e44ad','#00acc1'],
+                        borderColor: '#1e5799'
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: (type==='bar'||type==='line') ? { y: { beginAtZero: true } } : {} }
+            });
+            if (!isOffscreen) statsChartInstance = instance;
+            return instance;
+        }
+
+        function createOffscreenChart(points, chartKind) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 900; canvas.height = 420;
+            const chart = renderStatsChart(canvas, points, chartKind, { offscreen: true });
+            const url = chart.toBase64Image('image/png', 1.0);
+            chart.destroy();
+            return url;
+        }
+
+        function exportReportHTML(points, opts) {
+            const title = (opts && opts.title) || 'Отчёт';
+            const chartKind = (opts && opts.chartKind) || 'by-status';
+            const chartUrl = createOffscreenChart(points, chartKind);
+            const now = new Date();
+            const fileName = `report_${now.toISOString().slice(0,19).replace(/[:T]/g,'-')}.html`;
+            const rowsHtml = points.map((p, idx) => `
+                <tr>
+                    <td>${idx+1}</td>
+                    <td>${pollutionTypes[p.type]||p.type}</td>
+                    <td>${p.status}</td>
+                    <td>${escapeHtml(p.description||'')}</td>
+                    <td>${p.date}</td>
+                    <td>Ш: ${p.lat}, Д: ${p.lng}</td>
+                </tr>
+            `).join('');
+            const html = `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>${title}</title>
+                <meta name="viewport" content="width=device-width,initial-scale=1.0">
+                <style>body{font-family:Segoe UI,Tahoma,Arial,sans-serif;padding:16px;background:#fafafa;color:#333}
+                h1{color:#1e5799;font-size:20px;margin:0 0 10px 0}
+                .card{background:#fff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,0.08);padding:12px;margin-bottom:14px}
+                table{width:100%;border-collapse:collapse}
+                th,td{padding:8px 10px;border-bottom:1px solid #eee;text-align:left}
+                th{background:#f3f6fb;color:#1e5799}
+                .meta{color:#666;font-size:12px;margin-bottom:8px}
+                img{max-width:100%}
+                </style></head><body>
+                <h1>${title}</h1>
+                <div class="meta">Дата формирования: ${now.toLocaleString()} | Кол-во точек: ${points.length}</div>
+                <div class="card"><div style="font-weight:600;margin-bottom:6px">Диаграмма</div>
+                    <img src="${chartUrl}" alt="Диаграмма">
+                </div>
+                <div class="card"><div style="font-weight:600;margin-bottom:6px">Данные</div>
+                    <table>
+                        <thead><tr><th>#</th><th>Тип</th><th>Статус</th><th>Описание</th><th>Дата</th><th>Координаты</th></tr></thead>
+                        <tbody>${rowsHtml||'<tr><td colspan="6">Нет данных</td></tr>'}</tbody>
+                    </table>
+                </div>
+            </body></html>`;
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+        }
+
+        // Обработчики фильтров
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        document.getElementById('typeFilter').addEventListener('change', applyFilters);
+        document.getElementById('dateFilter').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            pollutionPlacemarks.forEach(item => {
+                const point = item.data;
+                let show = true;
+                
+                // Фильтр по статусу
+                if (statusFilter !== 'all' && point.status !== statusFilter) {
+                    show = false;
+                }
+                
+                // Фильтр по типу
+                if (typeFilter !== 'all' && point.type !== typeFilter) {
+                    show = false;
+                }
+                
+                // Фильтр по дате
+                if (dateFilter !== 'all') {
+                    const pointDate = new Date(point.date);
+                    const now = new Date();
+                    let diffDays;
+                    
+                    if (dateFilter === 'week') {
+                        diffDays = 7;
+                    } else if (dateFilter === 'month') {
+                        diffDays = 30;
+                    }
+                    
+                    const diffTime = Math.abs(now - pointDate);
+                    const diff = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diff > diffDays) {
+                        show = false;
+                    }
+                }
+                
+                if (show) {
+                    map.geoObjects.add(item.placemark);
+                } else {
+                    map.geoObjects.remove(item.placemark);
+                }
+            });
+        }
+
+        // Обработчик экспорта отчета
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const all = getAllPointsData();
+            const filtered = filterPoints(all, { status: statusFilter, type: typeFilter, date: dateFilter });
+            let chartKind = 'by-status';
+            const statsSection = document.getElementById('stats-section');
+            const chartKindEl = document.getElementById('statsChartKind');
+            if (statsSection && chartKindEl && statsSection.style.display === 'block') {
+                chartKind = chartKindEl.value || chartKind;
+            }
+            exportReportHTML(filtered, { title: 'Отчёт (Главная) — текущие фильтры', chartKind });
+        });
+
+        // Закрытие модальных окон при клике вне их
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Обработчик регистрации волонтёра
+        document.getElementById('volunteerRegisterForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const name = document.getElementById('volunteerName').value.trim();
+            const phone = document.getElementById('volunteerPhone').value.trim();
+            const email = document.getElementById('volunteerEmail').value.trim();
+            const comment = document.getElementById('volunteerComment').value.trim();
+            if (!name || !phone || !email) {
+                alert('Пожалуйста, заполните все обязательные поля!');
+                return;
+            }
+            let volunteers = JSON.parse(localStorage.getItem('volunteers')||'[]');
+            volunteers.push({name, phone, email, comment, date: new Date().toISOString()});
+            localStorage.setItem('volunteers', JSON.stringify(volunteers));
+            document.getElementById('volunteerMsg').textContent = 'Регистрация успешна!';
+            document.getElementById('volunteerMsg').style.display = 'block';
+            this.reset();
+            setTimeout(()=>{
+                document.getElementById('volunteerMsg').style.display = 'none';
+            }, 1800);
+        });
+
+        // Обработчик для кнопок добавления фото к существующим меткам
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('add-photo-btn')) {
+                const pointId = parseInt(e.target.getAttribute('data-id'));
+                openAddPhotoModal(pointId);
+            }
+        });
+
+        // БЛОК: Рассылка волонтёрам -----------
+        let broadcasts = JSON.parse(localStorage.getItem('broadcasts') || '[]');
+        function updateBroadcastTagOptionsFromMap() {
+            const tagSelect = document.getElementById('broadcastTag');
+            if (!tagSelect) return;
+            tagSelect.innerHTML = '<option value="">Без метки</option>';
+            let allPoints = [...pollutionData, ...approvedReports];
+            let seenIds = new Set();
+            allPoints.forEach(point => {
+                if (!seenIds.has(point.id)) {
+                    seenIds.add(point.id);
+                    let title = `${pollutionTypes[point.type]||point.type}: ${point.description.substr(0,32)}... | Ш: ${point.lat.toFixed(4)}, Д: ${point.lng.toFixed(4)}`;
+                    tagSelect.innerHTML += `<option value="${point.id}">${title}</option>`;
+                }
+            });
+        }
+        // при запуске и при изменении точек обновляем select рассылки
+        updateBroadcastTagOptionsFromMap();
+        const origUpdateExistingPointsList = updateExistingPointsList;
+        updateExistingPointsList = function() {
+            origUpdateExistingPointsList();
+            updateBroadcastTagOptionsFromMap();
+        }
+        // Обработчик формы рассылки
+        if(document.getElementById('broadcastForm')){
+            document.getElementById('broadcastForm').addEventListener('submit', function(e){
+                e.preventDefault();
+                const msg = document.getElementById('broadcastMessage').value.trim();
+                const selectedId = document.getElementById('broadcastTag').value;
+                if (!msg) {
+                    alert('Пожалуйста, введите текст сообщения!');
+                    return;
+                }
+                const volunteers = JSON.parse(localStorage.getItem('volunteers') || '[]');
+                let recipients = volunteers;
+                let selectedPoint = null;
+                if (selectedId) {
+                    const allPoints = [...pollutionData, ...approvedReports];
+                    selectedPoint = allPoints.find(p=> p.id == selectedId);
+                }
+                const newBroadcast = {
+                    date: new Date().toISOString(),
+                    message: msg,
+                    mapPoint: selectedPoint, // добавляем объект метки
+                    recipients: recipients.map(v=>v.email)
+                };
+                broadcasts.push(newBroadcast);
+                localStorage.setItem('broadcasts', JSON.stringify(broadcasts));
+                document.getElementById('broadcastResult').textContent = `Сообщение разослано ${recipients.length} волонтёрам.`;
+                this.reset();
+                setTimeout(()=>{document.getElementById('broadcastResult').textContent = '';}, 2500);
+            });
+        }
+        // БЛОК: Вывод рассылки волонтёрам
+        function showVolunteerBroadcasts() {
+            const section = document.getElementById('volunteers-section');
+            if (!section) return;
+            let html = '';
+            let volunteers = JSON.parse(localStorage.getItem('volunteers')||'[]');
+            let email = '';
+            if (volunteers.length>0) email = volunteers[volunteers.length-1].email;
+            let broadcasts = JSON.parse(localStorage.getItem('broadcasts')||'[]');
+            let filtered = broadcasts.filter(b=> !b.recipients.length || b.recipients.includes(email));
+            if(filtered.length>0) {
+                html+='<div style="background:#fffcf5;border-left:4px solid #ff9800;padding:14px 20px;margin-bottom:1em;border-radius:7px">';
+                html+='<b>Сообщения от команды/администратора:</b><br>';
+                filtered.reverse().forEach(b=>{
+                    let metkaText = '';
+                    if (b.mapPoint) {
+                      metkaText = `[Метка: ${pollutionTypes[b.mapPoint.type]||b.mapPoint.type}, ${b.mapPoint.description.substr(0,30)}..., Ш: ${b.mapPoint.lat.toFixed(4)}, Д: ${b.mapPoint.lng.toFixed(4)}] `;
+                    }
+                    html += `<div style='margin-top:10px'><b>${metkaText}</b>${b.message} <span style='color:#888;font-size:85%'>${new Date(b.date).toLocaleString()}</span></div>`
+                });
+                html+='</div>';
+            }
+            const content = section.querySelector('.about-content');
+            if (content) {
+                content.querySelectorAll('.broadcasts-block').forEach(el=>el.remove());
+                if(html) {
+                  let div = document.createElement('div');
+                  div.className = 'broadcasts-block';
+                  div.innerHTML = html;
+                  content.insertAdjacentElement('afterbegin', div);
+                }
+            }
+        }
+        const origShowVolunteersSection = showVolunteersSection;
+        function newShowVolunteersSection() {
+            origShowVolunteersSection();
+            showVolunteerBroadcasts();
+        }
+        showVolunteersSection = newShowVolunteersSection;
+
+        // === Админ: рендер базы волонтёров и удаление ===
+        function renderVolunteersAdminBlock() {
+            const adminBlock = document.getElementById('volunteers-admin-block');
+            if (!adminBlock) return;
+            if (!isAdmin) {
+                adminBlock.style.display = 'none';
+                return;
+            }
+            adminBlock.style.display = 'block';
+            renderVolunteersTable();
+        }
+
+        function renderVolunteersTable() {
+            const tbody = document.getElementById('volunteersTbody');
+            if (!tbody) return;
+            const volunteers = JSON.parse(localStorage.getItem('volunteers')||'[]');
+            tbody.innerHTML = '';
+            if (volunteers.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7" style="padding:14px 12px;color:#666;text-align:center">Записей нет</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            volunteers.forEach((v, idx) => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #f0f0f0';
+                tr.innerHTML = `
+                    <td style="padding:10px 12px">${idx+1}</td>
+                    <td style="padding:10px 12px">${escapeHtml(v.name||'')}</td>
+                    <td style="padding:10px 12px">${escapeHtml(v.phone||'')}</td>
+                    <td style="padding:10px 12px">${escapeHtml(v.email||'')}</td>
+                    <td style="padding:10px 12px;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${(v.comment||'').replace(/\"/g,'&quot;')}">${escapeHtml(v.comment||'')}</td>
+                    <td style="padding:10px 12px">${new Date(v.date||'').toLocaleString()}</td>
+                    <td style="padding:10px 12px">
+                        <button class="btn btn-danger btn-small" data-action="del-volunteer" data-index="${idx}">Удалить</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function escapeHtml(str){
+            return String(str)
+                .replace(/&/g,'&amp;')
+                .replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;')
+                .replace(/'/g,'&#39;');
+        }
+
+        document.addEventListener('click', function(e){
+            const target = e.target;
+            if (target && target.getAttribute('id') === 'refreshVolunteersBtn') {
+                renderVolunteersTable();
+            }
+            if (target && target.getAttribute('id') === 'clearAllVolunteersBtn') {
+                if (!isAdmin) return;
+                const ok = confirm('Удалить всех волонтёров безвозвратно? Это действие нельзя отменить.');
+                if (ok) {
+                    localStorage.setItem('volunteers', '[]');
+                    renderVolunteersTable();
+                    alert('Все записи волонтёров удалены.');
+                }
+            }
+            if (target && target.getAttribute('data-action') === 'del-volunteer') {
+                if (!isAdmin) return;
+                const index = parseInt(target.getAttribute('data-index'));
+                let volunteers = JSON.parse(localStorage.getItem('volunteers')||'[]');
+                if (index>=0 && index<volunteers.length) {
+                    const v = volunteers[index];
+                    const ok = confirm(`Удалить волонтёра «${v.name||''}» безвозвратно?`);
+                    if (ok) {
+                        volunteers.splice(index,1);
+                        localStorage.setItem('volunteers', JSON.stringify(volunteers));
+                        renderVolunteersTable();
+                        alert('Волонтёр удалён.');
+                    }
+                }
+            }
+        });
+
+        // При входе в админ-режим показывать базу, если открыта вкладка волонтёров
+        const _showAdminPanel = showAdminPanel;
+        showAdminPanel = function(){
+            _showAdminPanel();
+            if (document.getElementById('volunteers-section').style.display === 'block') {
+                renderVolunteersAdminBlock();
+            }
+        }
+
+        (function() {
+            // Очистка волонтёров
+            localStorage.setItem('volunteers', '[]');
+            // Очистка меток за 2025 год
+            function filterNot2025(arr) {
+                return (arr||[]).filter(point => !/2025/.test(point.date));
+            }
+            let pData = JSON.parse(localStorage.getItem('pollutionData')||'[]');
+            let aData = JSON.parse(localStorage.getItem('approvedReports')||'[]');
+            pData = filterNot2025(pData);
+            aData = filterNot2025(aData);
+            localStorage.setItem('pollutionData', JSON.stringify(pData));
+            localStorage.setItem('approvedReports', JSON.stringify(aData));
+            // Можно удалить этот блок после выполнения задачи (удалить вручную строку после перезапуска)
+        })();
+
+        // ==== СИСТЕМА ПЕРЕВОДА (скопировано и интегрировано из NEW_deepseek_NEW.html) ====
+        const translations = {ru: {"app.title": "Карта чистоты Каспийского побережья", "nav.main": "Главная", "nav.admin": "Режим администратора", "nav.about": "О проекте", "nav.volunteers": "Волонтёрам", "nav.contacts": "Контакты", "auth.login": "Войти", "auth.login_title": "Вход в систему", "auth.username": "Имя пользователя", "auth.password": "Пароль", "auth.admin_credentials": "Для входа в режим администратора: имя - \"Мурад\", пароль - \"1234\"", "report.pollution": "Сообщить о загрязнении", "report.new_pollution": "Сообщить о новом загрязнении", "report.pollution_type": "Тип загрязнения *", "report.select_type": "Выберите тип", "report.location": "Местоположение *", "report.location_placeholder": "Сделайте двойной клик на карте для выбора", "report.description": "Описание проблемы *", "report.description_placeholder": "Опишите проблему подробнее...", "report.photos": "Фотографии (необязательно, можно выбрать несколько)", "report.upload_photos": "Нажмите для загрузки фотографий", "stats.pollution": "Статистика загрязнений", "stats.total_points": "Всего отмечено точек:", "stats.need_cleaning": "Требуют очистки:", "stats.in_progress": "В процессе очистки:", "stats.cleaned": "Очищено:", "stats.recent_week": "За последнюю неделю:", "stats.pollution_types": "Типы загрязнений", "pollution.household": "Бытовой мусор", "pollution.oil": "Нефтяное пятно", "pollution.industrial": "Промышленные отходы", "pollution.other": "Другое", "filters.status": "Статус:", "filters.type": "Тип загрязнения:", "filters.period": "За период:", "filters.all": "Все", "filters.all_time": "За всё время", "filters.week": "За неделю", "filters.month": "За месяц", "status.new": "Новые", "status.in_progress": "В работе", "status.cleaned": "Очищено", "actions.export": "Экспорт отчёта", "actions.submit": "Отправить сообщение", "actions.register": "Зарегистрироваться", "map.instruction": "Двойной клик для добавления метки", "admin.panel": "Режим администратора", "admin.logged_as": "Администратор: Мурад", "admin.logout": "Выйти из режима администратора", "admin.moderation": "Модерация сообщений", "admin.manage_points": "Управление метками", "admin.moderation_photos": "Модерация фото", "admin.pending_reports": "Сообщения на модерации", "admin.manage_existing": "Управление существующими метками", "admin.manage_instruction": "Нажмите на метку на карте, чтобы удалить её, или используйте список ниже:", "admin.pending_photos": "Фотографии на модерации", "about.title": "О проекте \"Карта чистоты Каспийского побережья\"", "about.description": "Проект \"Карта чистоты Каспийского побережья\" — это интерактивная платформа, созданная для мониторинга и борьбы с загрязнением побережья Каспийского моря. Наша миссия — объединить усилия местных жителей, волонтеров, экологов и властей для сохранения уникальной природы Каспийского региона.", "about.goals": "Цели проекта:", "about.goal1": "Создание общедоступной системы мониторинга загрязнений побережья", "about.goal2": "Привлечение внимания к экологическим проблемам Каспийского моря", "about.goal3": "Организация эффективных мероприятий по очистке побережья", "about.goal4": "Содействие взаимодействию между гражданами и ответственными органами", "about.how_it_works": "Как это работает:", "about.any_user": "Любой пользователь", "about.user_can": "может отметить на карте место загрязнения, добавить описание и фотографию", "about.volunteers": "Волонтеры и экологические организации", "about.volunteers_can": "видят \"горячие точки\" и могут организовать уборку", "about.authorities": "Местные власти", "about.authorities_get": "получают актуальную информацию о проблемных зонах", "about.admins": "Администраторы", "about.admins_moderate": "модерируют сообщения и координируют работу", "about.pollution_types": "Типы загрязнений, которые можно отметить:", "about.household_desc": "— пластик, стекло, бумага и другие отходы", "about.oil_desc": "— загрязнения нефтепродуктами", "about.industrial_desc": "— выбросы предприятий", "about.other_types": "Другие виды загрязнений", "about.other_desc": "— строительный мусор, опасные отходы и т.д.", "about.join_us": "Присоединяйтесь к нам!", "about.mission": "Каспийское море — уникальная экосистема, нуждающаяся в нашей защите. Вместе мы можем сделать побережье чище и сохранить его для будущих поколений.", "about.cooperation": "Проект разработан в рамках экологической инициативы и открыт для сотрудничества с организациями и волонтерами.", "volunteers.title": "Волонтёрам: Присоединиться и Помогать", "volunteers.description": "Регистрация в качестве волонтёра даёт возможность получать приглашения к эко-акциям, участвовать в командных проектах и влиять на чистоту побережья!", "volunteers.register": "Зарегистрироваться волонтёром", "volunteers.after_register": "После заполнения формы вы будете получать рассылки и приглашения от команды проекта и координаторов, а также сможете предложить свои инициативы по очистке побережья!", "form.full_name": "ФИО", "form.phone": "Телефон", "form.email": "Email", "form.comment": "Комментарий (необязательно)", "contacts.title": "Контакты команды и координаторов", "contacts.phone": "Телефон", "contacts.university": "Юридический институт Дагестанского Государственного Университета", "contacts.makhachkala": "Махачкала", "contacts.kaspiysk": "Каспийск", "contacts.help": "По любым вопросам участия или сотрудничества связывайтесь с нашими координаторами!", "photos.add_title": "Добавить фотографии к метке", "photos.select": "Выберите фотографии (можно несколько)", "photos.upload": "Нажмите для загрузки фотографий", "photos.submit": "Отправить фотографии на модерацию", "lang.russian": "Русский", "lang.english": "English", "footer.mission": "Проект разработан для улучшения экологической ситуации в регионе"},en: {"app.title": "Caspian Coast Cleanliness Map", "nav.main": "Main", "nav.admin": "Admin Mode", "nav.about": "About", "nav.volunteers": "For Volunteers", "nav.contacts": "Contacts", "auth.login": "Login", "auth.login_title": "System Login", "auth.username": "Username", "auth.password": "Password", "auth.admin_credentials": "For admin mode: username - \"Murad\", password - \"1234\"", "report.pollution": "Report Pollution", "report.new_pollution": "Report New Pollution", "report.pollution_type": "Pollution Type *", "report.select_type": "Select type", "report.location": "Location *", "report.location_placeholder": "Double-click on the map to select", "report.description": "Problem Description *", "report.description_placeholder": "Describe the problem in detail...", "report.photos": "Photos (optional, multiple selection available)", "report.upload_photos": "Click to upload photos", "stats.pollution": "Pollution Statistics", "stats.total_points": "Total marked points:", "stats.need_cleaning": "Require cleaning:", "stats.in_progress": "In progress:", "stats.cleaned": "Cleaned:", "stats.recent_week": "Last week:", "stats.pollution_types": "Pollution Types", "pollution.household": "Household waste", "pollution.oil": "Oil spill", "pollution.industrial": "Industrial waste", "pollution.other": "Other", "filters.status": "Status:", "filters.type": "Pollution type:", "filters.period": "Period:", "filters.all": "All", "filters.all_time": "All time", "filters.week": "Last week", "filters.month": "Last month", "status.new": "New", "status.in_progress": "In progress", "status.cleaned": "Cleaned", "actions.export": "Export report", "actions.submit": "Submit message", "actions.register": "Register", "map.instruction": "Double-click to add marker", "admin.panel": "Administrator Mode", "admin.logged_as": "Administrator: Murad", "admin.logout": "Exit admin mode", "admin.moderation": "Message Moderation", "admin.manage_points": "Manage Markers", "admin.moderation_photos": "Photo Moderation", "admin.pending_reports": "Messages under moderation", "admin.manage_existing": "Manage existing markers", "admin.manage_instruction": "Click on a marker on the map to delete it, or use the list below:", "admin.pending_photos": "Photos under moderation", "lang.russian": "Russian", "lang.english": "English", "footer.mission": "The project is developed to improve the environmental situation in the region"}};
+        let storedLang = localStorage.getItem('language');
+        let currentLanguage = (storedLang === 'ru' || storedLang === 'en') ? storedLang : 'ru';
+        function translatePage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            updateLanguageButton(lang);
+        }
+        function updateLanguageButton(lang) {
+            const languageCodes = {'ru': 'Ru', 'en': 'En'};
+            const flagClasses = {'ru': 'flag-ru', 'en': 'flag-gb'};
+            document.getElementById('currentLanguageCode').textContent = languageCodes[lang];
+            document.getElementById('currentFlag').className = 'flag ' + flagClasses[lang];
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('active');
+                }
+            });
+        }
+        // Устойчивая делегация событий для переключателя языка
+        (function(){
+            if (window.languageDelegationBound) return;
+            window.languageDelegationBound = true;
+            document.addEventListener('click', function(e){
+                const btn = document.getElementById('languageBtn');
+                const dd = document.getElementById('languageDropdown');
+                if (!btn || !dd) return;
+                const inSelector = e.target.closest('.language-selector');
+                const onBtn = e.target.closest('#languageBtn');
+                const onOption = e.target.closest('.language-option');
+                if (onBtn) {
+                    e.preventDefault();
+                    dd.classList.toggle('show');
+                    btn.setAttribute('aria-expanded', dd.classList.contains('show') ? 'true' : 'false');
+                    return;
+                }
+                if (onOption) {
+                    e.preventDefault();
+                    const lang = onOption.getAttribute('data-lang');
+                    translatePage(lang);
+                    dd.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                    return;
+                }
+                // Клик вне селектора — закрыть
+                if (!inSelector) {
+                    dd.classList.remove('show');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+        document.addEventListener('DOMContentLoaded', function() {
+            translatePage(currentLanguage);
+        });
+        // ==== / СИСТЕМА ПЕРЕВОДА ====
+    </script>
+</body>
+</html>
